@@ -53,6 +53,12 @@ async function run() {
   const propertyId = req.params.propertyId;
   const result = await ratingCollection.find({propertyId}).toArray();
   res.send(result);
+ });
+
+ app.get("/my-ratings", async(req,res)=>{
+  const email = req.query.email;
+  const result = await ratingCollection.find({userEmail:email}).toArray();
+  res.send(result);
  })
   
     // property api
@@ -64,7 +70,15 @@ async function run() {
 
     app.get("/properties/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: id };
+
+      let query = {}
+
+      if (ObjectId.isValid(id)) {
+        query._id = new ObjectId(id);
+      } else {
+        query._id = id;
+      }
+      // const query = { _id: new ObjectId(id) };
       const result = await propertyCollection.findOne(query);
       res.send(result);
     });
