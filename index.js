@@ -8,8 +8,6 @@ const port = process.env.PORT || 3000;
 /* middleWare */
 app.use(cors());
 app.use(express.json());
-// HomeNestDB
-// oIqi0ykCAvat1l6O
 
 const uri = "mongodb+srv://HomeNestDB:oIqi0ykCAvat1l6O@cluster0.fcwgrle.mongodb.net/?appName=Cluster0";
 
@@ -28,6 +26,7 @@ async function run() {
     const db = client.db("HomeNest-db");
     const propertyCollection = db.collection("properties");
     const userCollection = db.collection("users");
+    const ratingCollection = db.collection("rating");
 
 
       /* User related Api */
@@ -44,18 +43,7 @@ async function run() {
       }
     });
 
-    /* Properties related ApI */
-    // app.get("/properties", async (req, res) => {
-    //   const email = req.query.email;
-    //   const query = {};
-    //   if (email) {
-    //     query.email = email;
-    //   }
-
-    //   const cursor = propertyCollection.find(query);
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // });
+  
 
     app.get("/latest-properties", async (req, res) => {
       const cursor = propertyCollection.find().sort({ postedDate: -1 }).limit(6);
@@ -73,10 +61,15 @@ async function run() {
     app.get("/properties",async (req,res)=>{
       const search = req.query.search;
       const sort = req.query.sort;
+      const email= req.query.email;
 
       let query ={};
       if (search) {
         query.propertyName = {$regex:search,$options:"i"};
+      }
+
+      if(email){
+        query["postedBy.email"] = email;
       }
 
       let sortOption ={};
