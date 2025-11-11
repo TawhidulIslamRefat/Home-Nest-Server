@@ -42,9 +42,20 @@ async function run() {
         res.send(result);
       }
     });
+  //  rating Api
+  app.post("/ratings", async(req,res)=>{
+    const rating = req.body;
+    const result = await ratingCollection.insertOne(rating);
+    res.send(result);
+  });
 
+ app.get("rating/:propertyId", async (req,res)=>{
+  const propertyId = req.params.propertyId;
+  const result = await ratingCollection.find({propertyId}).toArray();
+  res.send(result);
+ })
   
-
+    // property api
     app.get("/latest-properties", async (req, res) => {
       const cursor = propertyCollection.find().sort({ postedDate: -1 }).limit(6);
       const result = await cursor.toArray();
