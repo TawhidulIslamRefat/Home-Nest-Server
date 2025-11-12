@@ -48,7 +48,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("rating/:propertyId", async (req, res) => {
+    app.get("/ratings/:propertyId", async (req, res) => {
       const propertyId = req.params.propertyId;
       const result = await ratingCollection.find({ propertyId }).toArray();
       res.send(result);
@@ -121,7 +121,16 @@ async function run() {
       const id = req.params.id;
       const updatedProduct = req.body;
       const query = { _id: new ObjectId(id) };
-      const update = updatedProduct;
+      const update = {
+        $set: {
+          propertyName: updatedProduct.propertyName,
+          description: updatedProduct.description,
+          category: updatedProduct.category,
+          price: updatedProduct.price,
+          location: updatedProduct.location,
+          image: updatedProduct.image,
+        },
+      };
       const result = await propertyCollection.updateOne(query, update);
       res.send(result);
     });
