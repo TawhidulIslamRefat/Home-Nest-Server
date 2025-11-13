@@ -1,4 +1,5 @@
 const express = require("express");
+require("dotenv").config();
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
@@ -9,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 const uri =
-  "mongodb+srv://HomeNestDB:oIqi0ykCAvat1l6O@cluster0.fcwgrle.mongodb.net/?appName=Cluster0";
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.fcwgrle.mongodb.net/?appName=Cluster0`;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -21,7 +22,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("HomeNest-db");
     const propertyCollection = db.collection("properties");
@@ -148,7 +149,7 @@ async function run() {
       res.send(result);
     });
 
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
@@ -163,6 +164,11 @@ run().catch(console.dir);
 app.get("/", (req, res) => {
   res.send("HomeNest server is running");
 });
+
+app.get("/test", (req, res) => {
+  res.send("Smart server in running on test");
+});
+
 
 app.listen(port, () => {
   console.log(`HomeNest server is running on port :${port}`);
