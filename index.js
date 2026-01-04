@@ -31,16 +31,28 @@ async function run() {
 
     /* User related Api */
     app.post("/users", async (req, res) => {
-      const newUser = req.body;
-      const email = req.body.email;
-      const query = { email: email };
-      const existingUser = await userCollection.findOne(query);
-      if (existingUser) {
-        res.send({ message: "user already exits.do not need to insert again" });
-      } else {
-        const result = await userCollection.insertOne(newUser);
-        res.send(result);
+      const { name, email, photo } = req.body;
+
+      let role = "user";
+
+      if (email === process.env.ADMIN_EMAIL) {
+        role = "Admin";
       }
+      const newUser = {
+        name,
+        email,
+        photo,
+        role,
+        createdAt: new Date(),
+      };
+
+      const existingUser = await userCollection.findOne({ email });
+      if (existingUser) {
+        return res.send({ message: "User already exists" });
+      }
+
+      const result = await userCollection.insertOne(newUser);
+      res.send(result);
     });
     //  rating Api
     app.post("/ratings", async (req, res) => {
@@ -68,7 +80,7 @@ async function run() {
       const cursor = propertyCollection
         .find()
         .sort({ postedDate: -1 })
-        .limit(6);
+        .limit(8);
       const result = await cursor.toArray();
       res.send(result);
     });
